@@ -4,9 +4,9 @@
 import tkinter # 介面化套件
 import pandas # 資料處理套件
 import csv
-import AppConstants
-from Components import ControlPanel
-from Components import ReportPanel
+import constants
+from components import ControlPanel
+from components import ReportPanel
 
 class App(tkinter.Tk):
     def __init__(self):
@@ -14,7 +14,7 @@ class App(tkinter.Tk):
 
         ### window setting
         self.title('Python 期末專題 - 507170055 林宥如')
-        self.geometry(str(AppConstants.WINDOW_WIDTH) + 'x' + str(AppConstants.WINDOW_HEIGHT)) # 設定視窗大小(參數為字串)
+        self.geometry(str(constants.WINDOW_WIDTH) + 'x' + str(constants.WINDOW_HEIGHT)) # 設定視窗大小(參數為字串)
         self.configure(background='white') # background
 
         ### properties setting
@@ -27,10 +27,6 @@ class App(tkinter.Tk):
         ### display
         self.loadData()
         self.createWidgets() # 布置組件內容
-
-    def showFrame(self, frameClass):
-        frame = self.frames[frameClass]
-        frame.tkraise()
     
     def updateFrame(self, frameClass):
         frame = frameClass(self, self)
@@ -45,11 +41,11 @@ class App(tkinter.Tk):
     
     def filterData(self):
         # 判斷是否有此條件
-        hasFilter: bool = lambda condition: False if condition is None or len(condition.get()) < 1 or condition.get().find('所有') > -1 else True 
+        hasFilter: bool = lambda condition: False if condition is None or len(condition.get()) < 1 or condition.get().find(constants.SELECTION_ALL) > -1 else True 
         
         data = self.prop_dataFrame # default data
         
-        # pandas: .loc 可過濾條件，當存在條件時過濾資料，因為會有多重條件
+        # pandas: .loc 可過濾資料，當存在條件時過濾資料，因為會有多重條件
         if hasFilter(self.prop_school):
             data = data.loc[data['學校名稱'] == self.prop_school.get()] 
         
@@ -78,7 +74,6 @@ class App(tkinter.Tk):
         controlPanel = ControlPanel(self, self)
         reportPanel = ReportPanel(self, self)
         self.frames[ReportPanel] = reportPanel
-        # self.showFrame(ReportPanel)
     
 
 #data.groupby('學校名稱').size()
