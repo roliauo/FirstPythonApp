@@ -29,7 +29,7 @@ class App(tkinter.Tk):
         self.createWidgets() # 布置組件內容
     
     def updateFrame(self, frameClass):
-        frame = frameClass(self, self)
+        frame = frameClass(self)
         if self.frames[frameClass] is not None:
             self.frames[frameClass].destroy()
         self.frames[frameClass] = frame
@@ -71,8 +71,8 @@ class App(tkinter.Tk):
         # container = tkinter.Frame(self)
         # container.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=True)
        
-        controlPanel = ControlPanel(self, self)
-        reportPanel = ReportPanel(self, self)
+        controlPanel = ControlPanel(self)
+        reportPanel = ReportPanel(self)
         self.frames[ReportPanel] = reportPanel
     
 
