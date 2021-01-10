@@ -25,11 +25,15 @@ class GroupbyPanel(tkinter.Frame):
             # checkboxState = 'active' #if enabled else 'disabled'
             checkbox = tkinter.Checkbutton(self, text=itemName, var=checked, onvalue=itemName, offvalue='', command=parent.onUpdateData) # onvalue/offvalue 設定 var 所得到的值  #, state=checkboxState
             checkbox.grid(row=rowId)
-                       
+        
+        ### title
+        title = tkinter.Label(self, text='===== Groupby =====') # 建立label
+        title.grid(row=0, column=0, padx=20, pady=5) # 佈件
+
         ### checkbox (for groupby)
-        createCheckButton(3, '學校名稱', parent.prop_grouby[0])
-        createCheckButton(4, '科系名稱', parent.prop_grouby[1])
-        createCheckButton(5, '學位', parent.prop_grouby[2])
+        createCheckButton(1, '學校名稱', parent.prop_grouby[0])
+        createCheckButton(2, '科系名稱', parent.prop_grouby[1])
+        createCheckButton(3, '學位', parent.prop_grouby[2])
 
         
 class FilterPanel(tkinter.Frame):   
@@ -40,7 +44,6 @@ class FilterPanel(tkinter.Frame):
         self.display(parent)
 
     def display(self, parent):   
-
         def createOptionMenu(rowId: int, columnName: str, selection: tkinter.StringVar):
             noColumn = columnName not in parent.prop_currentData_columns.get() # 判斷欄位是否在目前資料中
             optionsList = ['-'] if noColumn else parent.prop_currentData[columnName].unique().tolist() # pandas找出欄位:<學校名稱>所有不重複的值 (為numpy.ndarray，再轉為串列)  
@@ -50,18 +53,22 @@ class FilterPanel(tkinter.Frame):
                 selection.set(optionsList[0]) # 預設選項一  
 
             optionMenu = tkinter.OptionMenu(self, selection, *optionsList)
-            
+
             if noColumn: # 若目前資料沒有此欄位的話禁止點選              
                 optionMenu.configure(state='disabled')
 
             optionLabel = tkinter.Label(self, text=columnName) # 建立label
-            optionLabel.grid(row=rowId, column=0, padx=20, pady=5) # 佈件
-            optionMenu.grid(row=rowId, column=1, padx=20, pady=5) 
+            optionLabel.grid(row=rowId, column=0, padx=0, pady=5) # 佈件
+            optionMenu.grid(row=rowId, column=1, padx=0, pady=5) 
+
+        ### title
+        title = tkinter.Label(self, text='===== Filter =====') # 建立label
+        title.grid(row=0, column=0, padx=20, pady=10) # 佈件
 
         ### option menu
-        createOptionMenu(0, '學校名稱', parent.prop_school)
-        createOptionMenu(1, '科系名稱', parent.prop_department)
-        createOptionMenu(2, '學位', parent.prop_degree)
+        createOptionMenu(1, '學校名稱', parent.prop_school)
+        createOptionMenu(2, '科系名稱', parent.prop_department)
+        createOptionMenu(3, '學位', parent.prop_degree)
 
         ### chart button
         def showChart(dataFrame, chartType: str, columnX: str, columnY: str):
