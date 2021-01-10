@@ -11,7 +11,6 @@ import constants
 plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei', 'sans-serif'] 
 plt.rcParams['axes.unicode_minus'] = False
 
-
 class ControlPanel(tkinter.Frame):   
     def __init__(self, parent):
         tkinter.Frame.__init__(self, parent) # 建立框架
@@ -25,7 +24,6 @@ class ControlPanel(tkinter.Frame):
             if len(label) > 0:
                 labelTxt = label
             optionLabel = tkinter.Label(self, text=labelTxt)
-            # optionLabel.pack(side=tkinter.LEFT)
             optionLabel.grid(row=id, column=0, padx=20, pady=10)
 
             optionsList = parent.prop_dataFrame[columnName].unique().tolist() # pandas找出欄位:<學校名稱>所有不重複的值 (為numpy.ndarray，再轉為串列)  
@@ -35,19 +33,14 @@ class ControlPanel(tkinter.Frame):
             selection.trace('w', onUpdateData) # 監聽選項改變時，觸發function。 'w'為監聽模式
 
             optionMenu = tkinter.OptionMenu(self, selection, *optionsList)
-            # optionMenu.pack(side=tkinter.LEFT)
             optionMenu.grid(row=id, column=1)
 
         def onUpdateData(*args): # *args 為不限定長度之參數 print(args) -> output: ('PY_VAR0', '', 'w')
             parent.updateFrame(ReportPanel) # 更新ReportPanel的資料
 
-        ### school menu
+        ### option menu
         createOptionMenu(0, '學校名稱', parent.prop_school)
-
-        ### department menu
         createOptionMenu(1, '科系名稱', parent.prop_department)
-
-        ### degree menu
         createOptionMenu(2, '等級別', parent.prop_degree, '學位')
 
         ### chart button
@@ -73,7 +66,6 @@ class ControlPanel(tkinter.Frame):
         btn_showChart = tkinter.Button(self, text='Chart', command=show)
         btn_showChart.grid(row=3)
 
-
 class ReportPanel(tkinter.Frame):
     def __init__(self, parent):
         tkinter.Frame.__init__(self, parent) 
@@ -81,7 +73,12 @@ class ReportPanel(tkinter.Frame):
         self.createWidgets(parent) # 布置組件內容
 
     def createWidgets(self, parent):  
-        print('ReportPanel:', parent.prop_school.get())
-        report = Table(self, dataframe=parent.filterData(), showstatusbar=True,  editable=False) 
+        # print('ReportPanel:', parent.prop_school.get())
+        data = parent.filterData()
+
+        report = Table(self, dataframe=data, showstatusbar=True,  editable=False)         
+        
+        report.showIndex() # 加入此行才能顯示index
+        report.adjustColumnWidths()
         report.show()
 
