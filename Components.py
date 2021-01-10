@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt # 圖表套件
 from pandastable import Table # 表格套件
 import constants
 
-### plot - font setting
+### plot - font setting (顯示中文)
 plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei', 'sans-serif'] 
 plt.rcParams['axes.unicode_minus'] = False
 
@@ -44,9 +44,9 @@ class FilterPanel(tkinter.Frame):
         self.display(parent)
 
     def display(self, parent):   
-        def createOptionMenu(rowId: int, columnName: str, selection: tkinter.StringVar):
-            noColumn = columnName not in parent.prop_currentData_columns.get() # 判斷欄位是否在目前資料中
-            optionsList = ['-'] if noColumn else parent.prop_currentData[columnName].unique().tolist() # pandas找出欄位:<學校名稱>所有不重複的值 (為numpy.ndarray，再轉為串列)  
+        def createOptionMenu(rowId: int, columnName: str, selection: tkinter.StringVar): # rowId為佈件需求
+            noColumn = columnName not in parent.prop_currentData_columns_str.get() # 判斷欄位是否在目前資料中
+            optionsList = ['-'] if noColumn else parent.prop_currentData[columnName].unique().tolist() # pandas找出特定欄位中所有不重複的值 (為numpy.ndarray，再轉為串列)  
             optionsList.insert(0, constants.SELECTION_ALL) # 加入'全部'之選項
             
             if len(selection.get()) == 0:
@@ -71,27 +71,75 @@ class FilterPanel(tkinter.Frame):
         createOptionMenu(3, '學位', parent.prop_degree)
 
         ### chart button
-        def showChart(dataFrame, chartType: str, columnX: str, columnY: str):
-            dataArrX = columnX #dataFrame[columnX] #need to be modified
-            dataArrY = columnY #dataFrame[columnY]
-            if chartType == constants.CHART_BAR:
-                plt.bar(dataArrX, dataArrY)
-            elif chartType == constants.CHART_PIE:
-                plt.pie(dataArrY, labels = dataArrX)
-            elif chartType == constants.CHART_LINE:
-                plt.plot(dataArrX, dataArrY)
-                #plt.plot('x','y',data=data)
-                #plt.plot(data['x'],data['y'])
+        def showChart(chartType: str = constants.CHART_BAR):
+            data = parent.prop_currentData.copy()
+            dataColumns = parent.prop_currentData.columns.values.tolist()
+            hasGroupby = len(parent.getGroupbyList()) > 0
+            filterDict = {
+                '學校名稱': parent.prop_school.get(),
+                '科系名稱': parent.prop_department.get(),
+                '學位': parent.prop_degree.get()
+            }
+            filterList = list(filterDict.values())
+
+            def plotChart(dataArrX, columnY_list, labels):
+                for i, y in enumerate(columnY_list):
+                    if chartType == constants.CHART_BAR:
+                        plt.bar(dataArrX, y, label=labels[i])
+                    elif chartType == constants.CHART_LINE:
+                        plt.plot(dataArrX, y, label=labels[i])
+                    # elif chartType == constants.CHART_PIE:
+                    #     plt.pie(dataArrY, labels = dataArrX)
+
+            ## 判斷圖表之x,y欄位
+            if hasGroupby == False and filterList.count(constants.SELECTION_ALL) == len(filterList): # 無任何篩選 --> # 總就學人數
+                columnX = '全學年'
+                plotChart(['全學年'], [data['總計'].sum(), data['男生計'].sum(), data['女生計'].sum()], ['總計', '男生計', '女生計'])
+            else:
+                if hasGroupby and filterList.count(constants.SELECTION_ALL) == len(filterList): # 只有groupby --> 選擇第一欄  
+
+                    if dataColumns[0] == '學校代碼':
+                        columnX = '學校名稱'
+                    else:
+                        columnX = dataColumns[0]  
+
+                elif hasGroupby == False: # 只有filter --> 找出其他選擇'全部'的欄位 作為 x軸資料，三個filter都下的話就選總計前一個
+
+                    if constants.SELECTION_ALL not in filterList:
+                        columnX = dataColumns[dataColumns.index('總計') - 1]
+                    else:
+                        index = filterList.index(constants.SELECTION_ALL)
+                        columnX = list(filterDict.keys())[index]
+
+                else: 
+                    columnX = dataColumns[dataColumns.index('總計') - 1]
+
+                plotChart(data[columnX], [data['總計'], data['男生計'], data['女生計']], ['總計', '男生計', '女生計'])          
+           
+
+                # if chartType == constants.CHART_BAR:
+                #     plt.bar(dataArrX, data['總計'], label='總計')
+                #     plt.bar(dataArrX, data['男生計'], label='男生計')
+                #     plt.bar(dataArrX, data['女生計'], label='女生計')
+                # elif chartType == constants.CHART_LINE:
+                #     plt.plot(dataArrX, data['總計'], label='總計')
+                #     plt.plot(dataArrX, data['男生計'], label='男生計')
+                #     plt.plot(dataArrX, data['女生計'], label='女生計')
+                # elif chartType == constants.CHART_PIE:
+                #     plt.pie(dataArrY, labels = dataArrX)
+
             
-            plt.show()
-        def show():
-            x = ["A", "B", "C", "D"]
-            y = [3, 8, 1, 10]
-            plt.bar(x,y)
+            
+            plt.ylabel("人數")
+            plt.xlabel(columnX)
+            plt.title("Chart")
+            plt.legend(loc = 'best')
             plt.show()
 
-        btn_showChart = tkinter.Button(self, text='Chart', command=show)
-        btn_showChart.grid(row=6, columnspan=3)
+        btn_showChart = tkinter.Button(self, text='Bar Chart', command=lambda: showChart(constants.CHART_BAR)) # lambda: showChart(constants.CHART_BAR)
+        btn_showChart.grid(row=6, column=0, padx=20, pady=20)
+        btn_showChart = tkinter.Button(self, text='Line Chart', command=lambda: showChart(constants.CHART_LINE))
+        btn_showChart.grid(row=6, column=1, padx=20, pady=20)
 
 
 class ReportPanel(tkinter.Frame):
