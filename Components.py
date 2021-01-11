@@ -127,16 +127,15 @@ class FilterPanel(tkinter.Frame):
                 #     plt.plot(dataArrX, data['女生計'], label='女生計')
                 # elif chartType == constants.CHART_PIE:
                 #     plt.pie(dataArrY, labels = dataArrX)
-
-            
-            
-            plt.ylabel("人數")
-            plt.xlabel(columnX)
-            plt.title("Chart")
-            plt.legend(loc = 'best')
+           
+            plt.ylabel("人數") # y軸標題
+            plt.xlabel(columnX) # x軸標題
+            plt.xticks(rotation=90) # 設置圖上x軸的呈現
+            plt.title(chartType.title() + " Chart")
+            plt.legend(loc = 'best') # 顯示標示圖
             plt.show()
-
-        btn_showChart = tkinter.Button(self, text='Bar Chart', command=lambda: showChart(constants.CHART_BAR)) # lambda: showChart(constants.CHART_BAR)
+        
+        btn_showChart = tkinter.Button(self, text='Bar Chart', command=lambda: showChart(constants.CHART_BAR)) 
         btn_showChart.grid(row=6, column=0, padx=20, pady=20)
         btn_showChart = tkinter.Button(self, text='Line Chart', command=lambda: showChart(constants.CHART_LINE))
         btn_showChart.grid(row=6, column=1, padx=20, pady=20)
