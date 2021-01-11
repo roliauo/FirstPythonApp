@@ -110,6 +110,14 @@ class FilterPanel(tkinter.Frame):
 
                 else: 
                     columnX = dataColumns[dataColumns.index('總計') - 1]
+                    # 找出資料中有不只一種值的欄位
+                    for filterColName in list(filterDict.keys()):
+                        if filterColName in dataColumns:
+                            valueList = parent.prop_currentData[filterColName].unique().tolist() # pandas找出特定欄位中所有不重複的值 (為numpy.ndarray，再轉為串列)
+                            if len(valueList) > 1:
+                                columnX = filterColName
+                                break
+                    # print('columnX', columnX)               
 
                 plotChart(data[columnX], [data['總計'], data['男生計'], data['女生計']], ['總計', '男生計', '女生計'])          
            
