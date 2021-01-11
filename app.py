@@ -35,9 +35,7 @@ class App(tkinter.Tk):
         self.display()     
 
         ### 監聽目前資料欄位，監聽選項改變時，觸發function。 'w'為監聽模式
-        def updateFilterPanel(*args): # 因會傳入多個參數，所以建立此函式
-            self.updateFrame(FilterPanel)
-        self.prop_currentData_columns_str.trace('w', updateFilterPanel)
+        self.prop_currentData_columns_str.trace('w', lambda *args: self.updateFrame(FilterPanel))
         self.prop_school.trace('w', self.onUpdateData) 
         self.prop_degree.trace('w', self.onUpdateData) 
         self.prop_department.trace('w', self.onUpdateData) 
@@ -124,15 +122,13 @@ class App(tkinter.Tk):
         return data
         
     def display(self):  
-        groupbyPanel = GroupbyPanel(self)    
-        filterPanel = FilterPanel(self)
-        reportPanel = ReportPanel(self)
-
-        self.frames[GroupbyPanel] = groupbyPanel # set frames
-        self.frames[FilterPanel] = filterPanel 
-        self.frames[ReportPanel] = reportPanel 
+        self.frames[GroupbyPanel] = GroupbyPanel(self)   # set frames
+        self.frames[FilterPanel] = FilterPanel(self)
+        self.frames[ReportPanel] = ReportPanel(self) 
     
 
 if __name__ == "__main__":
     app = App()
     app.mainloop() # 視窗持續存在
+
+#81

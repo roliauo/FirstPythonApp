@@ -22,7 +22,6 @@ class GroupbyPanel(tkinter.Frame):
         def createCheckButton(rowId: int, itemName: str, checked: tkinter.StringVar):
             if len(checked.get()) == 0:
                 checked.set('') # 預設 
-            # checkboxState = 'active' #if enabled else 'disabled'
             checkbox = tkinter.Checkbutton(self, text=itemName, var=checked, onvalue=itemName, offvalue='', command=parent.onUpdateData) # onvalue/offvalue 設定 var 所得到的值  #, state=checkboxState
             checkbox.grid(row=rowId)
         
@@ -97,14 +96,12 @@ class FilterPanel(tkinter.Frame):
                 plotChart(['全學年'], [data['總計'].sum(), data['男生計'].sum(), data['女生計'].sum()], ['總計', '男生計', '女生計'])
             else:
                 if hasGroupby and filterList.count(constants.SELECTION_ALL) == len(filterList): # 只有groupby --> 選擇第一欄  
-
                     if dataColumns[0] == '學校代碼':
                         columnX = '學校名稱'
                     else:
                         columnX = dataColumns[0]  
 
                 elif hasGroupby == False: # 只有filter --> 找出其他選擇'全部'的欄位 作為 x軸資料，三個filter都下的話就選總計前一個
-
                     if constants.SELECTION_ALL not in filterList:
                         columnX = dataColumns[dataColumns.index('總計') - 1]
                     else:
@@ -116,21 +113,9 @@ class FilterPanel(tkinter.Frame):
 
                 plotChart(data[columnX], [data['總計'], data['男生計'], data['女生計']], ['總計', '男生計', '女生計'])          
            
-
-                # if chartType == constants.CHART_BAR:
-                #     plt.bar(dataArrX, data['總計'], label='總計')
-                #     plt.bar(dataArrX, data['男生計'], label='男生計')
-                #     plt.bar(dataArrX, data['女生計'], label='女生計')
-                # elif chartType == constants.CHART_LINE:
-                #     plt.plot(dataArrX, data['總計'], label='總計')
-                #     plt.plot(dataArrX, data['男生計'], label='男生計')
-                #     plt.plot(dataArrX, data['女生計'], label='女生計')
-                # elif chartType == constants.CHART_PIE:
-                #     plt.pie(dataArrY, labels = dataArrX)
-           
             plt.ylabel("人數") # y軸標題
             plt.xlabel(columnX) # x軸標題
-            plt.xticks(rotation=90) # 設置圖上x軸的呈現
+            plt.xticks(rotation=90) # 設置圖上x軸的呈現 (旋轉90度)
             plt.title(chartType.title() + " Chart")
             plt.legend(loc = 'best') # 顯示標示圖
             plt.show()
@@ -153,3 +138,5 @@ class ReportPanel(tkinter.Frame):
         report = Table(self, dataframe=data, showstatusbar=True, editable=False) # 建立table               
         report.showIndex() # 加入此行才能顯示index
         report.show()
+
+#95

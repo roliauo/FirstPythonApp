@@ -1,7 +1,7 @@
 # 林宥如 507170055
 # -*- coding: utf-8 -*-
 
-### window 640*480
+### window size
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 
@@ -10,6 +10,6 @@ CHART_BAR = 'bar'
 CHART_PIE = 'pie'
 CHART_LINE = 'line'
 
-###
+### selection
 SELECTION_ALL = '全部'
 
